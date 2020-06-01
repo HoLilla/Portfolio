@@ -1,0 +1,226 @@
+---
+title: "Sales data analysis"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_chunk$set(fig.width=3.2, fig.height=3.5) 
+
+options(scipen = 999) # disable scientific notation (this causes long numbers to appear in full rather than being truncated)
+# Seed for random number generation
+set.seed(42)
+
+#library("readxl")
+library("dplyr")
+library("ggplot2")
+library("effects")
+library("pROC")
+library("buildmer") 
+source("https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R")
+source("http://www-users.york.ac.uk/~er13/45I%20-%202016/functions/summarySE.R")
+```
+*Please note that the analysis below was ran on a simulated dataset and should be only considered in the context of the portfolio.*
+
+Scenario: The business needs actionable insight based on some sales data.
+
+## Executive Summary 
+
+The goal of the present analysis was to reach some actionable insights for the business based on the product sales data. Based on the commonalities across measures 3 action groups were created such as marketing, growth and customer insights.
+
+* **Marketing actions**: The analysis revealed that medium shelf location outperforms both good and bad shelf locations in terms of product sales. This means that medium shelf location could be beneficial to prioritise in the future. Furthermore, the data suggests that as the product price increased so did product sales. However, this does not necessarily mean that increasing the price of the product would lead to even higher sales. It is potentially reflective of a contributing factor that wasn't measured. For instance, it is possible that there is less and less selection/competition for our products the more high-quality product it becomes (which would also increase their price) meaning that most people will end up buying our product regardless of the price. Nonetheless, I would suggest no need to decrease the price point of the product either at the moment, but more data on selection would help with gaining further insights. Finally, in our sample competitor product price and advertising costs did not seem to have an effect on the product sales, meaning that new advertising strategies should be considered for the future.
+
+* **Growth actions**: The analysis suggests that the product performs better in non-US and non-urban areas regardless of the population size. According to these results the expansion to less urban areas and outside US could be beneficial for the business in the long-run. These growth oriented actions could include opening of new sites, stocking the products in stores or free/decreased shipping to less urban areas and outside US certain areas.
+
+* **Customer insights**: The results suggest regardless of the average income of the customers increases in education level and age are associated with higher product sales volume. The average age of the customer group is 50, ranging between 25 to 80. It would be beneficial to target these customers from this age group (specifically from the higher ends) and customers with higher education level. 
+
+Please note that predictions about the impact is non-causal meaning that experimentation or causal inference would be needed to confirm the above hypothesis and reliably assume any kinds of causality.
+
+
+```{r include=FALSE}
+sales_data<-read.csv('my_data2.csv')
+
+head(sales_data,10)
+names(sales_data)
+sum_sales_data<-summary(sales_data)
+sales_data$product_sales_volume<-as.numeric(sales_data$product_sales_volume)
+
+sales_data %>%
+  summarise(n_obs = n())
+
+no_sample<-sales_data %>%
+  filter(shelf_location != 'Nan', is_US != 'Nan') %>%
+  summarise(n_obs = n())
+
+#1 difference
+
+#actions: change price point (maybe comp. to competition), target consumer based on income/age/education_level, invest into advertising, market coverage product sales/population, change shelf location, open more stores in the country side vs urban areas/ us vs somewhere else
+
+```
+
+## Analysis
+
+
+One observation had NaN on the categorical independent variables (shelf_location, is_US and is_urban) so it was filtered out from the data set, leaving the final data set with N = `r no_sample$n_obs`.
+
+Summary of main descriptive statistics across variables:
+```{r echo=FALSE}
+sales_data<-sales_data %>%filter(shelf_location != 'Nan', is_US != 'Nan')
+sum_sales_data<-summary(sales_data)
+sum_sales_data
+```
+
+
+```{r echo=FALSE}
+
+# Create the function.
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+sum_sales_data_volume<-sales_data %>%
+  summarise(n_obs = n(),
+            m_product_sales_volume = mean(product_sales_volume),
+            med_product_sales_volume = median(product_sales_volume),
+            mod_product_sales_volume= getmode(product_sales_volume),
+            sd_product_sales_volume = sd(product_sales_volume))%>%
+  arrange(desc(m_product_sales_volume))
+
+ggplot(sales_data, aes( y = product_sales_volume, fill = 'red')) +
+  geom_flat_violin(aes(1),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
+  geom_point(aes(x = as.numeric(1)-.15, y = product_sales_volume, colour = 'red'),position = position_jitter(width = .05), size = 3, shape = 20,alpha = 0.3)+
+  geom_boxplot(aes( y = product_sales_volume, fill = 'red'),outlier.shape = NA, alpha = .5, width = .1, colour = "black")+ theme(legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))+xlab("")+ylab("Product sales volume")+scale_x_discrete(
+                     labels = c("",""))+coord_flip()+ggtitle("Product sales volume distribution and central metrics")
+
+```
+
+The rain cloud plot above provides data distribution, the central tendency by box plots and the jittered presentation of our raw data. When looking at the distribution of product sales volume its shape somewhat resembling a bimodal distribution (i.e. distribution with two peaks), which could potentially mean that the observations could come from two groups in terms of a currently unknown independent variable. The mean sales volume of the sample is `r round(sum_sales_data_volume$m_product_sales_volume,2)` while the most frequent sales volume is `r sum_sales_data_volume$mod_product_sales_volume` with a standard deviation of `r round(sum_sales_data_volume$sd_product_sales_volume,2)`. 
+
+Based on the available data and types of measures, the actionable insights could be grouped into 3 potential action group such as changing the marketing (competitor product price, shelf placement, product price, advertising costs), growth (is_urban, is_US, population) and customer insights (education_level, representative_age, average_income). The data set will be explored along these action groups in terms of their effects on the dependent/outcome variable of interest: product_sales_volume. 
+
+Before continuing, I prepared the independent variables by standardising the continuous measures and declaring the categorical variables as factors. Standardising is important as I want to reduce the multicollinearity among the independent variables in the same model.
+
+
+```{r echo=FALSE}
+sales_data$shelf_location<-factor(sales_data$shelf_location)
+sales_data$is_urban<-factor(sales_data$is_urban) 
+sales_data$is_US<-factor(sales_data$is_US) 
+
+sales_data$competitor_product_price<-scale(sales_data$competitor_product_price,center=TRUE,scale=TRUE)
+sales_data$average_income<-scale(sales_data$average_income,center=TRUE,scale=TRUE)
+sales_data$advertising_costs<-scale(sales_data$advertising_costs,center=TRUE,scale=TRUE)
+sales_data$population<-scale(sales_data$population,center=TRUE,scale=TRUE)
+sales_data$product_price<-scale(sales_data$product_price,center=TRUE,scale=TRUE)
+sales_data$representative_age<-scale(sales_data$representative_age,center=TRUE,scale=TRUE)
+sales_data$education_level<-scale(sales_data$education_level,center=TRUE,scale=TRUE)
+
+
+```
+
+I selected the optimal model by using *buildmer* R package which can perform automatic backward step-wise elimination based on the change on a set criterion (here AIC values). For every action group (marketing, growth and customer insights) I first defined the maximal model including the corresponding independent variables as main effects then ran the optimal model that only contained measures that significantly improved the model fit.    
+
+```{r include=FALSE}
+
+mark.opt.mod<-buildmer(product_sales_volume ~ 1 + competitor_product_price + product_price + shelf_location + advertising_costs, data=sales_data,crit='AIC')
+growth.opt.mod<-buildmer(product_sales_volume ~ 1 + is_US + is_urban + population, data=sales_data,crit='AIC')
+cust.opt.mod<-buildmer(product_sales_volume ~ 1 + education_level + representative_age + average_income, data=sales_data,crit='AIC')
+```
+
+## Marketing
+
+Backward step-wise elimination revealed that the optimal model was different from the maximal model of marketing as it only included competitor product price, shelf placement and product price as main effects in the model, meaning that including the measure advertising costs did not improve the model fit enough.
+
+Fitting a linear regression has shown that product sales volume is significantly different across shelf types, specifically the Medium shelf location is associated with the highest levels of sales volume followed by the Good then the Bad shelf locations. A positive link between product price and sales volume was also revealed. Although, the optimal model would still include the measure competitor product price it had no significant effect on product sales volume. For more details on statistics please refer to the below summaries.
+
+```{r echo=FALSE}
+
+
+sum_shelf_location<-sales_data %>%
+  group_by(shelf_location) %>%
+  summarise(n_obs = n(),
+            mean = round(mean(product_sales_volume),2),
+            median = round(median(product_sales_volume),2),
+            stdev = round(sd(product_sales_volume),2))%>%
+  arrange(desc(mean))
+
+knitr::kable(sum_shelf_location, caption = 'Shelf location')
+
+sales_data$rl_shelf<-relevel(sales_data$shelf_location, ref = 'Good')
+
+mark<-lm(product_sales_volume~ 1 + shelf_location + 
+    product_price + competitor_product_price, data=sales_data)
+rl.mark<-lm(product_sales_volume~ 1 + rl_shelf + 
+    product_price + competitor_product_price, data=sales_data)
+
+plot(allEffects(mark), main = NULL)
+jtools::summ(mark)
+jtools::summ(rl.mark)
+
+```
+## Growth
+
+Backward step-wise elimination revealed that the optimal model was the same as the maximal model of growth that included measures as main effects such as the size of the population, whether an area is urban or is in the US.
+
+According to the results of the linear regression with the two categorical and one continuous measure, product sales volume is significantly higher in non-US areas than in the US, higher in non-urban areas than in urban areas and is negatively linked to increases in population (meaning sales volume is higher in less populated areas).
+
+```{r echo=FALSE}
+sum_urban<-sales_data %>%
+  group_by(is_urban) %>%
+  summarise(n_obs = n(),
+            mean = round(mean(product_sales_volume),2),
+            median = round(median(product_sales_volume),2),
+            stdev = round(sd(product_sales_volume),2))%>%
+    arrange(desc(mean))
+
+sum_us<-sales_data %>%
+  group_by(is_US) %>%
+  summarise(n_obs = n(),
+            mean = round(mean(product_sales_volume),2),
+            median = round(median(product_sales_volume),2),
+            stdev = round(sd(product_sales_volume),2))%>%
+    arrange(desc(mean))
+
+knitr::kable(sum_urban, caption = 'Urban area')
+knitr::kable(sum_us, caption = 'US location')
+
+growth<-lm(product_sales_volume~ 1 + is_US + is_urban + population, data=sales_data)
+
+plot(allEffects(growth), main = NULL)
+jtools::summ(growth)
+
+```
+
+
+## Customer insights 
+Backward step-wise elimination revealed that the optimal model was the same as the maximal model of customer insights that included education_level,representative_age,average_income as main effects.
+
+The linear regression with the three continuous independent variables suggest that product sales value increases as customers education level and age increases.  Although, the optimal model would still include the measure of average income, this measure had no significant effect on product sales volume.
+
+```{r echo=FALSE}
+cust<-lm(product_sales_volume~ 1 + education_level + representative_age + average_income, data=sales_data)
+
+plot(allEffects(cust), main = NULL)
+
+jtools::summ(cust)
+
+```
+
++ Side note: By visually inspecting the distribution of order sales volume in the US and non-US areas and also in urban vs non-urban areas it is possible that the presence of these groups lead to a distribution with two peaks when considering the distribution of order sales volume in the whole sample. However, this hypothesis would require more knowledge about potential other variables within the two geographical groups.
+
+```{r echo=FALSE}
+
+ggplot(sales_data, aes(x = is_US, y = product_sales_volume, fill = is_US)) +
+  geom_flat_violin(aes(x = is_US),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
+  geom_point(aes(x = as.numeric(x = is_US)-.15, y = product_sales_volume, colour = is_US),position = position_jitter(width = .05), size = 3, shape = 20,alpha = 0.3)+
+  geom_boxplot(aes( x = is_US, y = product_sales_volume, fill = is_US),outlier.shape = NA, alpha = .5, width = .1, colour = "black")+ theme(panel.background = element_blank(),axis.line = element_line(colour = "black"))+xlab("")+ylab("Product sales volume")+scale_x_discrete(
+                     labels = c("",""))+coord_flip()+ggtitle("Product sales volume distribution and central metrics")
+
+
+ggplot(sales_data, aes(x = is_urban, y = product_sales_volume, fill = is_urban)) +
+  geom_flat_violin(aes(x = is_urban),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
+  geom_point(aes(x = as.numeric(x = is_urban)-.15, y = product_sales_volume, colour = is_urban),position = position_jitter(width = .05), size = 3, shape = 20,alpha = 0.3)+
+  geom_boxplot(aes( x = is_urban, y = product_sales_volume, fill = is_urban),outlier.shape = NA, alpha = .5, width = .1, colour = "black")+ theme(panel.background = element_blank(),axis.line = element_line(colour = "black"))+xlab("")+ylab("Product sales volume")+scale_x_discrete(
+                     labels = c("",""))+coord_flip()+ggtitle("Product sales volume distribution and central metrics")
+
+```
