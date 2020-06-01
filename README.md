@@ -1,31 +1,54 @@
-R Markdown
+Data Science Portfolio
+----------------------
+
+Thank you for interest in my data science portfolio. Repository
+containing portfolio of data science projects completed by me for self
+learning and/or academic purposes. This collection isn’t a exhausitve
+list of projects more like means to showcase certain skills I can use
+reliably - presented in the form of R (and markdown), Python, Matlab and
+SQL scripts. If you have any questions or want to collaborate please
+feel free to reach out to me on \[LinkedIn\]
+<a href="https://www.linkedin.com/in/lilla-hodossy/" class="uri">https://www.linkedin.com/in/lilla-hodossy/</a>.
+
+Deep dives
 ----------
 
-This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see
-<a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.
+### Business problems using simulated data-sets
 
-When you click the **Knit** button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like this:
+For me it is important to find balance between speed and accuracy for
+every analysis. According to my experience in industry sometimes a
+good-enough answer we can reach within an hour is more valuable than the
+perfect solution we could reach with days or months of work. For this
+reason below I am showcasing what I can do less or more time at my hand
+using 2 made up business questions. I completed these projects while
+timing myself.
 
-    summary(cars)
+Methods used: Exploration of data distribution, Aggregating
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+-   What can I do within 8 hours ?
 
-Including Plots
----------------
+add D updated analysis
 
-You can also embed plots, for example:
+-   What can I do within 1-1.5 half?
 
-![](Untitled_files/figure-markdown_strict/pressure-1.png)
+add O updated analysis
 
-Note that the `echo = FALSE` parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.
+### Academic projects
+
+During my PhD in Cognitive neuroscience I enjoyed applying different
+analytical methods, followed high standards in the reproducibility and
+transparency of my projects by producing fully reproducible manuscripts
+on the results.
+
+\[biofeedback\]<a href="https://www.youtube.com/watch?v=Irc-ZeKeUUY" class="uri">https://www.youtube.com/watch?v=Irc-ZeKeUUY</a>
+
+SQL
+---
+
+Interacting with Snowflake through DataGrip and R , data wrangling ,
+describe project steps, NDA
+
+Communication of Results
+------------------------
+
+Videos, publications, twitter threads
