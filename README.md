@@ -7,8 +7,8 @@ learning and/or academic purposes. This collection isn’t a exhausitve
 list of projects more like means to showcase certain skills I can use
 reliably - presented in the form of R (and markdown), Python, Matlab and
 SQL scripts. If you have any questions or want to collaborate please
-feel free to reach out to me on \[LinkedIn\]
-(<a href="https://www.linkedin.com/in/lilla-hodossy/" class="uri">https://www.linkedin.com/in/lilla-hodossy/</a>).
+feel free to reach out to me on
+[LinkedIn](https://www.linkedin.com/in/lilla-hodossy/).
 
 Deep dives
 ----------
@@ -40,8 +40,7 @@ analytical methods, followed high standards in the reproducibility and
 transparency of my projects by producing fully reproducible manuscripts
 on the results.
 
-\[biofeedback\]
-(<a href="https://www.youtube.com/watch?v=Irc-ZeKeUUY" class="uri">https://www.youtube.com/watch?v=Irc-ZeKeUUY</a>)
+[biofeedback](https://www.youtube.com/watch?v=Irc-ZeKeUUY)
 
 SQL
 ---
