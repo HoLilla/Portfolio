@@ -1,0 +1,118 @@
+---
+title: "Power analysis example"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Experiment Design
+
+### Hypothesis
+By removing the free trial period one can expect a reduction in the acquisition of new monthly subscribers. On the other hand, one can anticipate a lower churn rate among the new subscribers. 
+
+### Measurement metrics
+- Number of new subscribers per month
+- Number of retaining customers per month
+
+### Experiment structure
+Randomised control experiment (A/B testing) with between-groups design.
+
+Group A: Subscription plan with two-week-long trial period 
+
+Group B: Subscription plan without a trial period
+
+Randomisation would happen on a user ID level. 
+
+```{r include=FALSE}
+library(gsDesign)
+# past data on the variable of interest, from which to estimate the
+# mean and standard deviation of the experimental data we will collect
+
+subscr_data<-readxl::read_excel("my_data.xlsx")
+
+m_orders <- mean(subscr_data$ORDERS)
+sd_orers <- sd(subscr_data$ORDERS)
+
+#m_value <- mean(subscr_data$ORDERS_VALUE)
+#sd_value <- sd(subscr_data$ORDERS_VALUE)
+
+length(unique(subscr_data$SUBSCRIBER_ID))
+# past data on the variable of interest, from which to estimate the
+# mean and standard deviation of the experimental data we will collect
+data = rnorm(1857, mean = m_orders, sd = sd_orers)
+
+#data = rnorm(777, mean = 5, sd = 1)
+
+s = sd(data)
+delta = 0.1
+
+# calculate the sample size which would be required for the
+# standard design
+n_fixed = power.t.test(n = NULL, delta, s,
+                       sig.level = 0.05,
+                       power = 0.8,
+                       alternative = "two.sided")$n
+
+# initital gsDesign object with evenly spaced checkpoints,
+# used to calculate the maximum samples we would require
+design = gsDesign(k=3, test.type = 4, alpha = 0.025, 
+                  sfu=sfPower, sfupar = 2, sfl=sfPower, 
+                  sflpar=3, n.fix = n_fixed,   beta = 0.2)
+
+# the maximum number of samples which would be required for the
+# sequential design
+n_sequential = tail(design$n.I, 1)
+
+# checkpoints at which we wish to check the experiment. E.g. at 10%
+# 50%, and 100% of the maximum samples
+checkpoints = c(
+  ceiling(n_sequential / 10),
+  ceiling(n_sequential / 2),
+  ceiling(n_sequential)
+)
+
+# another gsDesign object which has our chosen checkpoints
+big_sample<-gsDesign(k=3, test.type = 4, alpha = 0.025, sfu=sfPower, 
+         sfupar = 2, sfl=sfPower, sflpar=3, n.fix = n_fixed,  
+         n.I = checkpoints, beta = 0.2)
+
+
+#While the above is past data (dataset I was sent) on the variable of interest
+# it feels excessive so I decided to calculate the power based on maximum resource of N = 2000
+
+seq_analysis <- gsDesign(k = 3,
+                         test.type = 1,
+                         alpha = 0.05,
+                         sfu=sfPower, sfupar = 2, sfl=sfPower, 
+                         sflpar=3, beta = 0.2)
+max_n <- 2000
+max_n_per_group <- max_n / 2
+stopping_points <- max_n_per_group * seq_analysis$timing
+```
+
+### Power analysis 
+To increase efficiency and to decrease futility, an interim sequential analysis is needed. This type of analysis requires adjustments of the alpha level at every check point. Using the package *gsDesign* one can calculate the corresponding sample size and corrected p-value requirements at every check point. Given that the previously analysed sample resembles the new sample of interest - it could be informative to use the mean and standard deviation of that sample for the power calculation. However, given that the previously analysed sample has high standard deviation the calculation suggests an excessive size of sample size (i.e. N = `r big_sample$n.I[[1]]`) even for the first check point. To be more resource efficient, I ran another power analysis where the final sample size was maximised in N = 2000. This analysis using 3 check points provides the following adjusted p-value criteria and corresponding sample sizes (i.e. N = `r round(stopping_points)`):
+
+```{r echo=FALSE}
+seq_analysis
+```
+
+### Suggestions for exploratory analysis
+If the hypothesis holds it would be interesting to see if the decreased churn rate and increased retention rate could compensate in terms of revenue for the acquired loss associated with the lower numbers of subscribers. 
+
+### Potential risks
+A potential risk to anticipate is that sample acquisition can be slower and more difficult in the groups without a free subscription trial. This is likely to introduce big differences in sample sizes between groups and prolong the experiment.
+
+Another possible risk is that a longer active period is needed for the any effect to appear. Fortunately, this issue can be (re)evaluated at every checkpoint during data acquisition. 
+
+It is also important to prevent customers from signing up more than once to the free trial period as they can introduce noise to the data. 
+
+Finally, there is a possible economical risk associated with this experiment. As the previous data analysis suggests that the exposure to the subscription during the free trial has remaining facilitating effects even after cancelling the subscription. As it is unlikely that this group of customers would start a subscription without the trial one must evaluate the loss of revenue associated with the reduced number of potential higher spenders during the time of the experiment.
+
+Session info:
+
+```{r echo=FALSE}
+sessionInfo()
+```
