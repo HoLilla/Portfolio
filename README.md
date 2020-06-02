@@ -116,7 +116,7 @@ version of communication, to reach a wider audience I think it is
 important to create accessible versions of the same content like in the
 form of a [video](https://www.youtube.com/watch?v=f_3z9lXBJzw) or a
 [twitter
-thread](https://twitter.com/Lilla_Hodossy/status/1174291708697333760)
+thread](https://twitter.com/Lilla_Hodossy/status/1174289668713734144)
 etc.
 
 I applied this approach in my current position too where I communicated
