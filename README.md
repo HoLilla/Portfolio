@@ -87,37 +87,40 @@ possible for instance these
 [randomisation](https://github.com/HoLilla/PhD_Study5/blob/master/condition_randomisation.R)
 and
 [scoring](https://github.com/HoLilla/PhD_Study5/blob/master/scoring_study5.m)
-algorithms, the latter which reads in automatically calculates scores
-based on the files in its directory.
+algorithms, the latter which automatically reads in files in its
+directory (following a pattern) and calculates scores based on the
+stored data.
 
 SQL
 ---
 
-In my current role I use SQL on a daily bases interacting with Snowflake
-through DataGrip and R. As part of main projects there I productionised
-code for creating and updating a data on daily basis that categorises
-consumers into segments based on their ordering behaviour. As this
-project is part of the NDA with my company I cannot share the code, but
-it includes steps data wrangling and aggregation based on set time
-periods, different types of joins, and case when functions.
+In my current role I use SQL on a daily basis interacting with Snowflake
+through DataGrip and R. As part of my current main project I
+productionised code for creating and updating a data table on a daily
+basis that categorises consumers into segments based on their ordering
+behaviour. As this project is part of the NDA with my company I cannot
+share the code, but it includes steps of data wrangling and aggregation
+based on set time periods and other grouping factors, different types of
+joins, and case when functions.
 
 Communication of Results
 ------------------------
 
 For me data analysis doesn’t stop at getting the results as I believe
 that the results should also be communicated by picking a tone and level
-of complexity that matches the audience. Click here access one of my
-[papers](https://www.sciencedirect.com/science/article/pii/S0010027719302264?casa_token=jMCs-TjFFgYAAAAA:469e8Fm5YXTnI_BsSvKw5Gz7ZSgsiCG0yTNDjWM0sWvUYGIFtTNko7WHg-O-FBGDF4Gj_121XXw#f0010)
-published in a high impact journal.
-
-While the above version is the most scientifically rigorous version of
-reporting I also created more accessible versions of the same content in
-the form of a [video](https://www.youtube.com/watch?v=f_3z9lXBJzw) and a
+of complexity that matches the audience.
+[Here](https://www.sciencedirect.com/science/article/pii/S0010027719302264?casa_token=jMCs-TjFFgYAAAAA:469e8Fm5YXTnI_BsSvKw5Gz7ZSgsiCG0yTNDjWM0sWvUYGIFtTNko7WHg-O-FBGDF4Gj_121XXw#f0010)
+you can access one of my published papers in a high impact journal.
+While a peer reviewed journal is one of the most scientifically rigorous
+version of communication, to reach a wider audience I think it is
+important to create accessible versions of the same content like in the
+form of a [video](https://www.youtube.com/watch?v=f_3z9lXBJzw) or a
 [twitter
-thread](https://twitter.com/Lilla_Hodossy/status/1174291708697333760).
+thread](https://twitter.com/Lilla_Hodossy/status/1174291708697333760)
+etc.
 
-I applied this approach in my current position where I communicated the
-results of a deep dive with the wider business in the form of a
+I applied this approach in my current position too where I communicated
+the results of a deep dive with the wider business in the form of a
 Workplace post and a short video. The response was very supportive and
 helped with making sure that outcome of the analysis will have impact on
 future business decisions.
@@ -125,19 +128,21 @@ future business decisions.
 Experimentation, A/B testing
 ----------------------------
 
+Normally I follow the structure below when designing A/B tests:
+
 1.  Define A and B groups, the level of randomisation, the outcome
     variables we wish to measure and the analysis we plan to run on the
     gathered data.
 
-2.  Run power analysis (e.g. see [R
+2.  Run a power analysis (e.g. see [R
     markdown](https://github.com/HoLilla/Portfolio/blob/master/Industry_exercise/power.Rmd),
     [pdf](https://github.com/HoLilla/Portfolio/blob/master/Industry_exercise/power.pdf))
-    to estimate the size we need to make valid conclusions. Power
-    analysis is important because we only want to run the A/B as long as
-    we gather enough data to make valid conclusions for the business.
+    to estimate the size of the sample the experiment needs to make
+    valid conclusions. Power analysis is important because we only want
+    to run the A/B as long as we gather enough data to make valid
+    conclusions for the business.
 
-3.  Monitoring that data is coming in properly (e.g. check feature
-    flags).
+3.  Monitor that data is coming in properly (e.g. check feature flags).
 
 4.  Start analysis only when the we reach the sample size, or correct
     for the family-wise error rate when stopping data collection more
