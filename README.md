@@ -144,8 +144,6 @@ Normally I follow the structure below when designing A/B tests:
 
 3.  Monitor that data is coming in properly (e.g. check feature flags).
 
-4.  Start analysis only when the we reach the sample size, or correct
-    for the family-wise error rate when stopping data collection more
-    than once. The latter one is important that because the possibility
-    that we find a result by chance the more times we repeat the
-    analysis on different parts of our sample.
+4.  Start analysis only when the desired sample size is reached, or
+    correct for the family-wise error rate when stopping data collection
+    more than once.
