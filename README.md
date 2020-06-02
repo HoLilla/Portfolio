@@ -34,15 +34,15 @@ analysis
 
 Methods used in both exercises:
 
-1.Exploration of data distribution
+1.  Exploration of data distribution
 
-2.Data aggregation and wrangling using *dplyr*
+2.  Data aggregation and wrangling using *dplyr*
 
-3.Data visualization using *ggplot2*
+3.  Data visualization using *ggplot2*
 
-4.Linear regression using categorical and continuous data
+4.  Linear regression using categorical and continuous data
 
-5.Automatisation of formating using R mark down and *knitr*
+5.  Automatisation of formating using R mark down and *knitr*
 
 **What can I do within 8 hours ?**
 
