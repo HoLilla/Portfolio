@@ -13,6 +13,8 @@ collaborate please feel free to reach out to me on
 I would illustrate the current level of my skill set in the following
 way:
 
+![Radar plot skills](skills.png)
+
 Of course, I always aim to develop my skills further and throughout the
 years I proven that I have the dedication to adapt to situations and
 teach myself new skills when needed.
