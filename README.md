@@ -24,19 +24,25 @@ Deep dives
 
 ### Business problems using simulated data-sets
 
-For me it is important to find balance between speed and accuracy for
+For me it is important to find a balance between speed and accuracy for
 every analysis. According to my experience in industry, sometimes a
-good-enough answer we can reach within an hour is more valuable than the
-perfect solution we could reach with days or months of work. For this
-reason, below I am showcasing what can I do with less or more time at my
-hand using 2 made up business questions on 2 distinct data sets I
-haven’t seen before.
+good-enough answer within an hour is more valuable than the perfect
+solution within days or months of work. For this reason, below I am
+showcasing analyses I can do with less or more time, using 2 made up
+business questions on 2 distinct data sets I haven’t seen prior to the
+analysis
 
-Methods used in both exercises: \* Exploration of data distribution \*
-Data aggregation and wrangling using dplyr \* Data visualization using
-ggplot2 \* Linear regression using categorical and continuous data
+Methods used in both exercises:
 
--   **What can I do within 8 hours ?**
+\*Exploration of data distribution
+
+\*Data aggregation and wrangling using dplyr
+
+\*Data visualization using ggplot2
+
+\*Linear regression using categorical and continuous data
+
+**What can I do within 8 hours ?**
 
 This analysis explores the impact of joining the subscription programme
 on a business that cares about customer ordering frequency and value
@@ -46,7 +52,7 @@ or
 [pdf](https://github.com/HoLilla/Portfolio/blob/master/Industry_exercise/Portfolio1.pdf)
 versions).
 
--   **What can I do within 1-1.5 hour(s)?**
+**What can I do within 1-1.5 hour(s)?**
 
 This analysis explores what actionable insights can be reached for a
 business based on some sales data (see [R
@@ -121,9 +127,9 @@ Experimentation, A/B testing
     variables we wish to measure and the analysis we plan to run on the
     gathered data.
 
-2.  Run power analysis e.g. [R
+2.  Run power analysis (e.g. see [R
     markdown](https://github.com/HoLilla/Portfolio/blob/master/Industry_exercise/power.Rmd),
-    [pdf](https://github.com/HoLilla/Portfolio/blob/master/Industry_exercise/power.pdf)
+    [pdf](https://github.com/HoLilla/Portfolio/blob/master/Industry_exercise/power.pdf))
     to estimate the size we need to make valid conclusions. Power
     analysis is important because we only want to run the A/B as long as
     we gather enough data to make valid conclusions for the business.
