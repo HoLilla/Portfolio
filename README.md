@@ -3,7 +3,7 @@ Data Science Portfolio
 
 Thank you for your interest in my data science portfolio. This is a
 repository that contains data science projects completed by me for self
-learning and/or academic purposes. This collection isn’t a exhaustive
+learning and/or academic purposes. This collection isn’t an exhaustive
 list of projects more like means to showcase certain skills I can use
 reliably - presented in the form of R (and markdown), Python (to be
 added), Matlab and SQL scripts. If you have any questions or want to
